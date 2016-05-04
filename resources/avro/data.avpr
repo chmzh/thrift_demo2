@@ -1,0 +1,42 @@
+{"namespace": "com.c.proto",
+ "protocol": "CDataProxy",
+
+ "types": [
+     {"name": "CSchema", "type": "record",
+      "fields": [
+          {"name": "dbName",   "type": "string"},
+          {"name": "tbName", "type": "string"},
+          {"name": "tbSchema", "type": "string"}
+      ]
+     },
+     {"name": "CData", "type": "record",
+      "fields": [
+          {"name": "dbName",   "type": "string"},
+          {"name": "tbName", "type": "string"},
+          {"name": "tbParCol", "type": "string"},
+          {"name": "tbParColVal", "type": "string"},
+          {"name": "tbData", "type": "bytes"},
+          {"name": "progress", "type": "int"}
+      ]
+     }
+ ],
+
+ "messages": {
+     "sendSchema": {
+         "request": [{"name": "message", "type": "CSchema"}],
+         "response": "string"
+     },
+     "sendData": {
+         "request": [{"name": "message", "type": "CData"}],
+         "response": "string"
+     },
+	 "queryDataCount":{
+		"request": [{"name": "sql", "type": "string"}],
+         "response": "int"
+	 },
+	 "queryData":{
+		"request": [{"name": "sql", "type": "string"},{"name": "curPage", "type": "int"},{"name": "rows", "type": "int"}],
+         "response": "string"
+	 }
+ }
+}

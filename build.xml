@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+		一体化JAR包自动生成，部署工具。
+		@Author  chenmingzhou
+ -->
+<project name="inflow1.0" default="dist" basedir=".">
+	<taskdef resource="net/sf/antcontrib/antlib.xml" />
+	<property name="version" value="c1.0" />
+	<property name="binjar" value="inflow-${version}.jar" />
+	
+
+	<property name="dist" value="${basedir}/build" />
+	<property name="bin" value="${basedir}/bin" />
+	<property name="resdir" value="${basedir}/resource" />
+	<property name="binskip" value="test/**, client/**, stress/**, base/**, tool/**" />
+	<property name="unjarred" value="**/*.jar, doc/**, README.html, .classpath, .project" />
+	<property  name ="lib.home"  value ="libs"   />
+	<property name="classes.dir" value="${basedir}/bin"></property>
+	
+	<target name="cleanup">
+		<delete file="${dist}/${binjar}" />
+		<delete file="${dist}/${lib.home}/*" />
+		<delete>
+					<fileset dir="${dist}/${lib.home}">
+					    <include name="*.jar"/>
+					</fileset>
+				</delete>
+	</target>
+
+	<target name="init">
+		<mkdir dir="${dist}"/>
+		<mkdir dir="${dist}/${lib.home}" />
+		<copydir src="${basedir}/${lib.home}" dest="${dist}/${lib.home}"></copydir>
+	</target>
+
+	<target name="dist" depends="cleanup, init">
+		<pathconvert property="libs.project" pathsep=" ">
+			<mapper>
+				<chainedmapper>
+					<flattenmapper />
+					<globmapper from="*" to="libs/*" />
+				</chainedmapper>
+			</mapper>
+			<path>
+				<fileset dir="${lib.home}">
+					<include name="**/*.jar" />
+				</fileset>
+			</path>
+		</pathconvert>
+
+		<jar destfile="${dist}/${binjar}" excludes="${unjarred}, **/*.java, build.xml">
+			<manifest>
+
+					<attribute  name ="Main-Class"  value ="com.cndw.inflow.startup.AvroServer"   />
+
+					<attribute name="Bundle-Vendor"		value="CNDW.COM" />
+					<attribute name="Bundle-Version"	value="${version}" />
+
+					<attribute  name ="Class-Path"  value =". ${libs.project}"   />
+			</manifest>
+			<fileset dir="${bin}" excludes="${binskip}" />
+		</jar>
+	</target>
+	<target name="dist_thrif_server" depends="cleanup, init">
+		<pathconvert property="libs.project" pathsep=" ">
+			<mapper>
+				<chainedmapper>
+					<flattenmapper />
+					<globmapper from="*" to="libs/*" />
+				</chainedmapper>
+			</mapper>
+			<path>
+				<fileset dir="${lib.home}">
+					<include name="**/*.jar" />
+				</fileset>
+			</path>
+		</pathconvert>
+
+		<jar destfile="${dist}/c_inflow_thrift.jar" excludes="${unjarred}, **/*.java, build.xml">
+			<manifest>
+
+					<attribute  name ="Main-Class"  value ="com.cndw.inflow.startup.ThriftServer"   />
+
+					<attribute name="Bundle-Vendor"		value="CNDW.COM" />
+					<attribute name="Bundle-Version"	value="${version}" />
+
+					<attribute  name ="Class-Path"  value =". ${libs.project}"   />
+			</manifest>
+			<fileset dir="${bin}" excludes="${binskip}" />
+		</jar>
+	</target>
+	<target name="dist_test" depends="cleanup, init">
+		<pathconvert property="libs.project" pathsep=" ">
+			<mapper>
+				<chainedmapper>
+					<flattenmapper />
+					<globmapper from="*" to="libs/*" />
+				</chainedmapper>
+			</mapper>
+			<path>
+				<fileset dir="${lib.home}">
+					<include name="**/*.jar" />
+				</fileset>
+			</path>
+		</pathconvert>
+
+		<jar destfile="${dist}/test.jar" excludes="${unjarred}, **/*.java, build.xml">
+			<manifest>
+
+					<attribute  name ="Main-Class"  value ="com.cndw.inflow.startup.Test"   />
+
+					<attribute name="Bundle-Vendor"		value="CNDW.COM" />
+					<attribute name="Bundle-Version"	value="${version}" />
+
+					<attribute  name ="Class-Path"  value =". ${libs.project}"   />
+			</manifest>
+			<fileset dir="${bin}" excludes="${binskip}" />
+		</jar>
+	</target>
+
+</project>

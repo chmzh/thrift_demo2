@@ -1,0 +1,14 @@
+C# 编译 avpr 文件
+avrogen.exe -p <.avrp file> <output dir>
+avrogen.exe -p D:\avro\codegen\Release\data.avpr  D:\avro\codegen\Release\
+
+
+java 编译 avpr
+cd inflow/resources/avro
+java -jar ../tools/java/avro-tools-1.7.7.jar compile protocol data.avpr ../..//src
+
+
+编译 thrift
+
+thrift -r --gen csharp service2.thrift
+thrift -r --gen java service2.thrift
