@@ -52,17 +52,36 @@ public class CndwHdfsProcess {
 	}
 	
 	public static void writeHdfs(String localFile,String hdfsFile) throws IOException{
-		InputStream in = new BufferedInputStream(new FileInputStream(localFile));
-		Configuration conf = newConfiguration();
-		String dst = hdfsRoot+hdfsFile;
-		FileSystem fs = newFileSystem(conf);
-		FSDataOutputStream out = fs.append(new Path(dst));
-		byte[] bytes = new byte[in.available()];
-		in.close();
-		out.write(bytes);
-		out.flush();
-		out.close();
-		fs.close();
+		//InputStream in = new BufferedInputStream(new FileInputStream(localFile));
+		//Configuration conf = newConfiguration();
+		//String dst = hdfsRoot+hdfsFile;
+		//FileSystem fs = newFileSystem(conf);
+		//FSDataOutputStream out = fs.append(new Path(dst));
+		//byte[] bytes = new byte[in.available()];
+		//in.close();
+		//out.write(bytes);
+		//out.flush();
+		//out.close();
+		//fs.close();
+		try {
+			//InputStream in = new BufferedInputStream(new FileInputStream(TransferHandler.rootPath+"/"+localFile));
+			Configuration conf = newConfiguration();
+			FileSystem fs = newFileSystem(conf);
+			Path src = new Path(TransferHandler.rootPath+"/"+localFile);
+			Path dst = new Path(hdfsRoot+"/"+localFile);
+			fs.copyFromLocalFile(src, dst);
+	        //FSDataOutputStream out = fs.create(dst);
+	        //IOUtils.copyBytes(in, out,conf,true);
+			//in.close();
+			//out.close();
+			//fs.close();
+		} catch (FileNotFoundException e) {
+			LOG.error(CommonUtil.exception(e));
+			throw e;
+		} catch (IOException e) {
+			LOG.error(CommonUtil.exception(e));
+			throw e;
+		}
 		
 	}
 	
@@ -80,8 +99,24 @@ public class CndwHdfsProcess {
 		conf.set("dfs.namenode.rpc-address.cndwservice1.namenode44", "master1:8020");
 		conf.set("dfs.namenode.rpc-address.cndwservice1.namenode74", "master2:8020");
 		conf.set("dfs.client.failover.proxy.provider.cndwservice1","org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider");
-		conf.set("ha.zookeeper.quorum", "slave1:2181,slave2:2181,slave3:2181");
+		conf.set("ha.zookeeper.quorum", "master1:2181,master2:2181,slave1:2181,slave2:2181,slave3:2181");
+		
+		conf.set("ha.health-monitor.connect-retry-interval.ms","30000");
+		conf.set("ha.health-monitor.check-interval.ms","30000");
+		conf.set("ha.health-monitor.sleep-after-disconnect.ms","1000");
+		conf.set("ha.health-monitor.rpc-timeout.ms","45000");
+		conf.set("ha.failover-controller.new-active.rpc-timeout.ms","60000");
+		conf.set("ha.failover-controller.graceful-fence.rpc-timeout.ms","5000");
+		conf.set("ha.failover-controller.graceful-fence.connection.retries","10");
+		conf.set("ha.failover-controller.cli-check.rpc-timeout.ms","20000");		
+		
 		conf.set("dfs.ha.automatic-failover.enabled.cndwservice1", "true");
+		conf.set("ipc.client.connection.maxidletime", "10000");
+		conf.set("ipc.client.connect.max.retries", "20");
+		conf.set("ipc.client.connect.retry.interval", "1000");
+		conf.set("ipc.client.connect.timeout", "20000");
+		conf.set("ipc.client.ping", "true");
+		conf.set("ipc.ping.interval", "60000");
 		return conf;
 	}
 }
