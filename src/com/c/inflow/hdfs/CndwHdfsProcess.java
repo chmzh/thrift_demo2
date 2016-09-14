@@ -30,7 +30,7 @@ public class CndwHdfsProcess {
 	 * @throws IOException
 	 */
 	public static void uploadToHdfs(String localFile) throws IOException{
-		
+		/*
 		InputStream in = new BufferedInputStream(new FileInputStream(localFile));
 		Configuration conf = newConfiguration();
 		FileSystem fs = newFileSystem(conf);
@@ -40,6 +40,26 @@ public class CndwHdfsProcess {
 		fs.copyFromLocalFile(src, dst);
 		in.close();
 		fs.close();
+		*/
+		try {
+			//InputStream in = new BufferedInputStream(new FileInputStream(TransferHandler.rootPath+"/"+localFile));
+			Configuration conf = newConfiguration();
+			FileSystem fs = newFileSystem(conf);
+			Path src = new Path(TransferHandler.rootPath+"/"+localFile);
+			Path dst = new Path(hdfsRoot+"/"+localFile);
+			fs.copyFromLocalFile(src, dst);
+	        //FSDataOutputStream out = fs.create(dst);
+	        //IOUtils.copyBytes(in, out,conf,true);
+			//in.close();
+			//out.close();
+			//fs.close();
+		} catch (FileNotFoundException e) {
+			LOG.error(CommonUtil.exception(e));
+			throw e;
+		} catch (IOException e) {
+			LOG.error(CommonUtil.exception(e));
+			throw e;
+		}
 	}
 	
 	public static boolean isExist(String hdfsFile) throws IOException{
